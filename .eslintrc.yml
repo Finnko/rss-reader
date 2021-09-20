@@ -9,6 +9,7 @@ env:
   node: true
   jest: true
   browser: true
+  es2020: true
 
 parser: "@babel/eslint-parser"
 

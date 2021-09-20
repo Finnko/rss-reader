@@ -3,7 +3,7 @@
 import Example from './Example.js';
 
 export default () => {
-  const element = document.getElementById('point');
+  const element = document.getElementById('app');
   const obj = new Example(element);
   obj.init();
 };
