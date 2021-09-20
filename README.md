@@ -3,14 +3,17 @@
 
 [![Code Climate](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/Finnko/frontend-project-lvl3)
 
-## Setup
+### Setup
 
 ```sh
 make install
 ```
 
-## Run
+### Run
 
 ```sh
 make dev
 ```
+
+### Vercel Demo
+[Demo](https://rss-app-frontend.vercel.app/)
