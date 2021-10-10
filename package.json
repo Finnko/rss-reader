@@ -50,8 +50,11 @@
   },
   "dependencies": {
     "bootstrap": "^5.1.1",
+    "i18next": "^21.2.6",
     "npm-check-updates": "^11.8.5",
+    "onchange": "^7.1.0",
     "sass": "^1.39.0",
-    "sass-loader": "^12.1.0"
+    "sass-loader": "^12.1.0",
+    "yup": "^0.32.9"
   }
 }
