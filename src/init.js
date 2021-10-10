@@ -1,9 +1,20 @@
 // @ts-check
+import 'regenerator-runtime/runtime.js';
+import i18next from 'i18next';
+import resources from './locales';
+import app from './app.js';
 
-import Example from './Example.js';
+export default async () => {
+  const defaultLanguage = 'ru';
 
-export default () => {
-  const element = document.getElementById('app');
-  const obj = new Example(element);
-  obj.init();
+  const i18nextInstance = i18next.createInstance();
+  await i18nextInstance.init({
+    lng: defaultLanguage,
+    debug: true,
+    resources: {
+      ru: resources.ru,
+    },
+  });
+
+  app(i18nextInstance);
 };
