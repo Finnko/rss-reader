@@ -1,6 +1,6 @@
 // @ts-check
 
-import init from './init.js';
-import './style.scss';
+import runApp from './init.js';
+import './styles/style.scss';
 
-init();
+runApp();
