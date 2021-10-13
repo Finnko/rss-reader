@@ -1,5 +1,9 @@
 export default {
   translation: {
-    reset: 'Сбросить',
+    errors: {
+      url: 'Невалидная ссылка',
+      required: 'Поле обязательно для заполнения',
+      unique: 'RSS поток уже существует',
+    },
   },
 };
