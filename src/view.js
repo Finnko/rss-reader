@@ -55,7 +55,7 @@ const renderErrors = (elements, errors, prevErrors) => {
   });
 };
 
-const render = (elements) => (path, value, prevValue) => {
+const render = (elements, watchedState, path, value, prevValue) => {
   console.log(path);
   switch (path) {
     case 'form.processState':
