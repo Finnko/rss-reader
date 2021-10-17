@@ -17,9 +17,8 @@ export default function app(i18n) {
     submitButton: document.querySelector('button[type="submit"]'),
   };
 
-  const schema = makeValidationSchema(i18n);
-
   const state = onChange({
+    urls: [],
     form: {
       valid: true,
       processState: 'filling',
@@ -29,19 +28,9 @@ export default function app(i18n) {
         url: '',
       },
     },
-  }, render(elements));
+  }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
 
-  // Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-  //   fieldElement.addEventListener('input', (e) => {
-  //     const { value } = e.target;
-  //     state.form.fields[fieldName] = value;
-  //     const errors = validate(state.form.fields);
-  //     state.form.errors = errors;
-  //     state.form.valid = isEmpty(errors);
-  //   });
-  // });
-
-  elements.form.addEventListener('submit', async (e) => {
+  elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const inputValue = elements.form.url.value;
 
@@ -49,15 +38,18 @@ export default function app(i18n) {
     state.form.processError = null;
     state.form.fields.url = inputValue;
 
-    const errors = await validateForm(schema, state.form.fields);
-    state.form.errors = errors;
-    state.form.valid = isEmpty(errors);
+    const schema = makeValidationSchema(i18n, state);
+    validateForm(schema, state.form.fields).then((result) => {
+      if (isEmpty(result)) {
+        state.urls.push(state.form.fields.url);
+      }
+      state.form.errors = result;
+      state.form.valid = isEmpty(result);
+    });
 
     delay(1000).then(() => {
       state.form.processState = 'sent';
     });
-
-    console.log({state});
 
     // try {
     //   await axios.post(routes.usersPath());
