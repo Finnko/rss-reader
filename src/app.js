@@ -16,10 +16,12 @@ export default function app(i18n) {
       url: document.querySelector('.feedback '),
     },
     submitButton: document.querySelector('button[type="submit"]'),
+    posts: document.querySelector('.posts'),
   };
 
   const state = onChange({
     urls: [],
+    posts: [],
     form: {
       valid: true,
       processState: 'filling',
@@ -59,6 +61,7 @@ export default function app(i18n) {
       .then((info) => {
         state.form.processState = 'sent';
         const { feed, posts } = parseRssData(info);
+        state.posts = posts;
       });
   });
 }
