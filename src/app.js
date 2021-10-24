@@ -2,8 +2,9 @@ import onChange from 'on-change';
 import isEmpty from 'lodash/isEmpty';
 import render from './view';
 import { makeValidationSchema, validateForm } from './validation';
+import makeRequest from './api/makeRequest';
+import parseRssData from './parser';
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function app(i18n) {
   const elements = {
@@ -39,25 +40,25 @@ export default function app(i18n) {
     state.form.fields.url = inputValue;
 
     const schema = makeValidationSchema(i18n, state);
-    validateForm(schema, state.form.fields).then((result) => {
-      if (isEmpty(result)) {
+
+    validateForm(schema, state.form.fields)
+      .then((result) => {
+        state.form.errors = result;
+        state.form.valid = isEmpty(result);
+      })
+      .then(() => {
+        if (!state.form.valid) {
+          return false;
+        }
+
         state.urls.push(state.form.fields.url);
-      }
-      state.form.errors = result;
-      state.form.valid = isEmpty(result);
-    });
+        const requests = state.urls.map(makeRequest);
 
-    delay(1000).then(() => {
-      state.form.processState = 'sent';
-    });
-
-    // try {
-    //   await axios.post(routes.usersPath());
-    //   state.form.processState = 'sent';
-    // } catch (err) {
-    //   state.form.processState = 'error';
-    //   state.form.processError = errorMessages.network.error;
-    //   throw err;
-    // }
+        return Promise.all(requests);
+      })
+      .then((info) => {
+        state.form.processState = 'sent';
+        const { feed, posts } = parseRssData(info);
+      });
   });
 }
