@@ -17,11 +17,13 @@ export default function app(i18n) {
     },
     submitButton: document.querySelector('button[type="submit"]'),
     posts: document.querySelector('.posts'),
+    feeds: document.querySelector('.feeds'),
   };
 
   const state = onChange({
     urls: [],
     posts: [],
+    feeds: [],
     form: {
       valid: true,
       processState: 'filling',
@@ -50,7 +52,8 @@ export default function app(i18n) {
       })
       .then(() => {
         if (!state.form.valid) {
-          return false;
+          state.form.processState = 'sent';
+          return Promise.reject(new Error('Form is not valid'));
         }
 
         state.urls.push(state.form.fields.url);
@@ -61,7 +64,11 @@ export default function app(i18n) {
       .then((info) => {
         state.form.processState = 'sent';
         const { feed, posts } = parseRssData(info);
-        state.posts = posts;
+        state.posts = state.posts.concat(posts);
+        state.feeds = [...state.feeds, feed];
+      })
+      .catch((err) => {
+        // обработка общая?
       });
   });
 }
