@@ -38,7 +38,6 @@ const renderPosts = (postsData) => {
 
 const render = (elements, watchedState, path, value, prevValue) => {
   const postsMarkup = renderPosts(watchedState.posts);
-  console.log(elements.posts);
   elements.posts.insertAdjacentHTML('beforeend', postsMarkup);
 };
 
