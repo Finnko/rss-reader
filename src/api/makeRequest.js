@@ -1,4 +1,5 @@
 import axios from 'axios';
+import errorTypes from '../const';
 
 const END_POINT = 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=';
 const TIMEOUT = 10000; // ms
@@ -13,7 +14,10 @@ const makeRequest = (url, options = {}) => (
   axiosInstance.get(END_POINT + url, options)
     .then(({ data }) => data.contents)
     .catch((err) => {
-      console.log(err);
+      const wrapErr = new Error();
+      wrapErr.name = errorTypes.network;
+      wrapErr.cause = err;
+      throw wrapErr;
     })
 );
 
