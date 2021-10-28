@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import keyBy from 'lodash/keyBy';
 
 const makeValidationSchema = (i18n, state) => {
   yup.setLocale({
@@ -20,7 +19,6 @@ const makeValidationSchema = (i18n, state) => {
 const validateForm = (schema, fields) => (
   schema.validate(fields, { abortEarly: false })
     .then(() => ({}))
-    .catch((e) => keyBy(e.inner, 'path'))
 );
 
 export { makeValidationSchema, validateForm };

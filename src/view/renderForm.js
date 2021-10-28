@@ -2,6 +2,7 @@
 import has from 'lodash/has';
 
 const handleProcessState = ({ submitButton }, processState) => {
+  console.log({processState})
   switch (processState) {
     case 'sent':
       submitButton.disabled = false;
@@ -20,9 +21,7 @@ const handleProcessState = ({ submitButton }, processState) => {
   }
 };
 
-const handleProcessForm = ({ submitButton, fields }, value) => {
-  submitButton.disabled = !value;
-
+const handleProcessForm = ({ fields }, value) => {
   if (value) {
     fields.url.value = '';
     fields.url.focus();
@@ -32,6 +31,7 @@ const handleProcessForm = ({ submitButton, fields }, value) => {
 const renderErrors = (elements, errors, prevErrors) => {
   Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
     const error = errors[fieldName];
+    console.log('error render', error);
     const fieldHadError = has(prevErrors, fieldName);
     const fieldHasError = has(errors, fieldName);
 
