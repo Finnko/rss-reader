@@ -1,4 +1,4 @@
-
+import { clearDomNode } from '../util';
 
 const renderFeed = (feed) => (`
   <li class="list-group-item border-0 border-end-0">
@@ -22,8 +22,9 @@ const renderFeeds = (feedsData) => {
   `);
 };
 
-const render = (elements, watchedState, path, value, prevValue) => {
+const render = (elements, watchedState) => {
   const feedsMarkup = renderFeeds(watchedState.feeds);
+  clearDomNode(elements.feeds);
   elements.feeds.insertAdjacentHTML('beforeend', feedsMarkup);
 };
 

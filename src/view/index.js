@@ -16,7 +16,6 @@ const render = (elements, watchedState, path, value, prevValue) => {
 
   if (path.includes('feeds')) {
     renderFeeds(elements, watchedState, path, value, prevValue);
-    return;
   }
 };
 

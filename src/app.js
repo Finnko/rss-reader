@@ -1,13 +1,13 @@
 import onChange from 'on-change';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
+import uniqueId from 'lodash/uniqueId';
 import render from './view';
 import { makeValidationSchema, validateForm } from './validation';
 import makeRequest from './api/makeRequest';
 import parseRssData from './parser';
 import errorTypes from './const';
-import transformError from './util';
-
+import { transformError } from './util';
 
 export default function app(i18n) {
   const elements = {
@@ -30,7 +30,7 @@ export default function app(i18n) {
     form: {
       valid: true,
       processState: 'filling',
-      processError: null,
+      showMessage: false,
       errors: {},
       fields: {
         url: '',
@@ -41,9 +41,8 @@ export default function app(i18n) {
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const inputValue = elements.form.url.value;
-
+    state.form.valid = false;
     state.form.processState = 'sending';
-    state.form.processError = null;
     state.form.fields.url = inputValue;
 
     const schema = makeValidationSchema(i18n, state);
@@ -55,12 +54,20 @@ export default function app(i18n) {
 
         return Promise.all(requests);
       })
-      .then((rssStreams) => {
-        state.form.processState = 'sent';
+      .then((rssStreams) => rssStreams.map(parseRssData))
+      .then((parsedRssData) => {
+        state.form.processState = 'success';
+        state.form.valid = true;
+        state.feeds = [];
+        state.posts = [];
 
-        const { feed, posts } = parseRssData(rssStreams);
-        state.posts = state.posts.concat(posts);
-        state.feeds = [...state.feeds, feed];
+        parsedRssData.forEach(({ feed, posts }) => {
+          const feedId = uniqueId();
+          const normalizedPosts = posts.map((post) => ({ ...post, feedId, id: uniqueId() }));
+
+          state.feeds = [{ ...feed, id: feedId }, ...state.feeds];
+          state.posts = [...normalizedPosts, ...state.posts];
+        });
       })
       .catch((err) => {
         state.form.processState = 'error';
@@ -79,7 +86,8 @@ export default function app(i18n) {
             state.form.valid = false;
             break;
           default:
-            throw new Error(`Unknown error: ${err}`);
+            state.form.errors = transformError(i18n.t('errors.unknown'));
+            state.form.valid = false;
         }
       });
   });
