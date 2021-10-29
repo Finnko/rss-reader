@@ -2,9 +2,8 @@
 import has from 'lodash/has';
 
 const handleProcessState = ({ submitButton }, processState) => {
-  console.log({processState})
   switch (processState) {
-    case 'sent':
+    case 'success':
       submitButton.disabled = false;
       break;
     case 'error':
@@ -56,6 +55,7 @@ const renderErrors = (elements, errors, prevErrors) => {
 };
 
 const render = (elements, watchedState, path, value, prevValue) => {
+  console.log('form path', path)
   switch (path) {
     case 'form.processState':
       handleProcessState(elements, value);

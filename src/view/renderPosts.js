@@ -1,9 +1,11 @@
+import { clearDomNode } from '../util';
+
 const renderPost = (post) => (`
    <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
      <a
        href=${post.link}
        class="fw-bold"
-       data-id="2"
+       data-id=${post.id}
        target="_blank"
        rel="noopener noreferrer"
      >
@@ -12,7 +14,7 @@ const renderPost = (post) => (`
      <button 
        type="button"
        class="btn btn-outline-primary btn-sm"
-       data-id="2"
+       data-id=${post.id}
        data-bs-toggle="modal"
        data-bs-target="#modal"
      >
@@ -36,8 +38,9 @@ const renderPosts = (postsData) => {
   `);
 };
 
-const render = (elements, watchedState, path, value, prevValue) => {
+const render = (elements, watchedState) => {
   const postsMarkup = renderPosts(watchedState.posts);
+  clearDomNode(elements.posts);
   elements.posts.insertAdjacentHTML('beforeend', postsMarkup);
 };
 
