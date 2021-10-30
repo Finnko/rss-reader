@@ -30,7 +30,7 @@ export default function app(i18n) {
     form: {
       valid: true,
       processState: 'filling',
-      showMessage: false,
+      messages: {},
       errors: {},
       fields: {
         url: '',
