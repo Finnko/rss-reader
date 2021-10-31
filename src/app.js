@@ -21,6 +21,14 @@ export default function app(i18n) {
     submitButton: document.querySelector('button[type="submit"]'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
+    modal: {
+      container: document.querySelector('.modal'),
+      title: document.querySelector('.modal-title'),
+      close: document.querySelector('.btn-close'),
+      body: document.querySelector('.modal-body'),
+      footerBtnOpen: document.querySelector('.btn-primary'),
+      footerBtnClose: document.querySelector('.btn-secondary'),
+    },
   };
 
   const state = onChange({
@@ -36,6 +44,10 @@ export default function app(i18n) {
         url: '',
       },
     },
+    modal: {
+      processState: 'closed',
+    },
+    activePost: {},
   }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
 
   elements.form.addEventListener('submit', (e) => {
@@ -63,7 +75,12 @@ export default function app(i18n) {
 
         parsedRssData.forEach(({ feed, posts }) => {
           const feedId = uniqueId();
-          const normalizedPosts = posts.map((post) => ({ ...post, feedId, id: uniqueId() }));
+          const normalizedPosts = posts.map((post) => ({
+            ...post,
+            feedId,
+            id: uniqueId(),
+            viewed: false,
+          }));
 
           state.feeds = [{ ...feed, id: feedId }, ...state.feeds];
           state.posts = [...normalizedPosts, ...state.posts];
@@ -90,5 +107,29 @@ export default function app(i18n) {
             state.form.valid = false;
         }
       });
+  });
+
+  elements.posts.addEventListener('click', ({ target }) => {
+    const { id } = target.dataset;
+
+    if (id) {
+      state.posts = state.posts.map((post) => {
+        if (post.id === id) {
+          return {
+            ...post,
+            viewed: true,
+          };
+        }
+
+        return post;
+      });
+
+      const activePost = state.posts.find((post) => post.id === id);
+
+      if (activePost) {
+        state.activePost = activePost;
+        state.modal.processState = 'opened';
+      }
+    }
   });
 }
