@@ -1,6 +1,7 @@
 import renderForm from './renderForm';
 import renderPosts from './renderPosts';
 import renderFeeds from './renderFeeds';
+import renderModal from './renderModal';
 
 const render = (elements, watchedState, path, value, prevValue) => {
   console.log({path})
@@ -16,6 +17,11 @@ const render = (elements, watchedState, path, value, prevValue) => {
 
   if (path.includes('feeds')) {
     renderFeeds(elements, watchedState, path, value, prevValue);
+    return;
+  }
+
+  if (path.includes('modal')) {
+    renderModal(elements, watchedState, path, value, prevValue);
   }
 };
 
