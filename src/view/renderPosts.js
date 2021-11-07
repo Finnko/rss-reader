@@ -1,10 +1,13 @@
 import { clearDomNode } from '../util';
 
-const renderPost = (post) => (`
+const renderPost = (post, viewedPosts) => {
+  const linkClass = viewedPosts.includes(post.id) ? 'link-secondary' : 'fw-bold';
+  console.log('work')
+  return (`
    <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
      <a
        href=${post.link}
-       class=${post.viewed ? 'link-secondary' : 'fw-bold'}
+       class=${linkClass}
        data-id=${post.id}
        target="_blank"
        rel="noopener noreferrer"
@@ -22,9 +25,10 @@ const renderPost = (post) => (`
      </button>
    </li>
 `);
+};
 
-const renderPosts = (postsData) => {
-  const posts = postsData.map(renderPost);
+const renderPosts = (watchedState) => {
+  const posts = watchedState.posts.map((item) => renderPost(item, watchedState.viewedPosts));
 
   return (`
     <div class="card border-0">
@@ -39,7 +43,7 @@ const renderPosts = (postsData) => {
 };
 
 const render = (elements, watchedState) => {
-  const postsMarkup = renderPosts(watchedState.posts);
+  const postsMarkup = renderPosts(watchedState);
   clearDomNode(elements.posts);
   elements.posts.insertAdjacentHTML('beforeend', postsMarkup);
 };

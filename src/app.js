@@ -32,9 +32,9 @@ export default function app(i18n) {
   const state = onChange({
     urls: [],
     posts: [],
+    viewedPosts: [],
     feeds: [],
     form: {
-      valid: true,
       processState: 'filling',
       messages: {},
       errors: {},
@@ -48,38 +48,31 @@ export default function app(i18n) {
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const inputValue = elements.form.url.value;
-    state.form.valid = false;
     state.form.processState = 'sending';
     state.form.fields.url = inputValue;
 
-    const schema = makeValidationSchema(i18n, state);
+    const feedUrls = state.feeds.map((feed) => feed.url);
+    const schema = makeValidationSchema(i18n, feedUrls);
 
     validateForm(schema, state.form.fields)
       .then(() => {
-        state.urls.push(state.form.fields.url);
-        const requests = state.urls.map(makeRequest);
-
-        return Promise.all(requests);
+        state.form.errors = {};
+        return makeRequest(state.form.fields.url);
       })
-      .then((rssStreams) => rssStreams.map(parseRssData))
+      .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
         state.form.processState = 'success';
-        state.form.valid = true;
-        state.feeds = [];
-        state.posts = [];
+        const { feed, posts } = parsedRssData;
 
-        parsedRssData.forEach(({ feed, posts }) => {
-          const feedId = uniqueId();
-          const normalizedPosts = posts.map((post) => ({
-            ...post,
-            feedId,
-            id: uniqueId(),
-            viewed: false,
-          }));
+        const feedId = uniqueId();
+        const normalizedPosts = posts.map((post) => ({
+          ...post,
+          feedId,
+          id: uniqueId(),
+        }));
 
-          state.feeds = [{ ...feed, id: feedId }, ...state.feeds];
-          state.posts = [...normalizedPosts, ...state.posts];
-        });
+        state.feeds = [{ ...feed, id: feedId, url: state.form.fields.url }, ...state.feeds];
+        state.posts = [...normalizedPosts, ...state.posts];
       })
       .catch((err) => {
         state.form.processState = 'error';
@@ -108,18 +101,8 @@ export default function app(i18n) {
     const { id } = target.dataset;
 
     if (id) {
-      state.posts = state.posts.map((post) => {
-        if (post.id === id) {
-          return {
-            ...post,
-            viewed: true,
-          };
-        }
-
-        return post;
-      });
-
       const activePost = state.posts.find((post) => post.id === id);
+      state.viewedPosts.push(id);
       state.modal = activePost;
     }
   });

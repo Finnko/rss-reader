@@ -1,4 +1,4 @@
-const render = ({ modal }, watchedState, path, value) => {
+const render = ({ modal }, watchedState, _, value) => {
   modal.title.textContent = value.title;
   modal.body.textContent = value.description;
   modal.footerBtnOpen.href = value.link;
