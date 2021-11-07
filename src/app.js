@@ -24,10 +24,8 @@ export default function app(i18n) {
     modal: {
       container: document.querySelector('.modal'),
       title: document.querySelector('.modal-title'),
-      close: document.querySelector('.btn-close'),
       body: document.querySelector('.modal-body'),
       footerBtnOpen: document.querySelector('.btn-primary'),
-      footerBtnClose: document.querySelector('.btn-secondary'),
     },
   };
 
@@ -44,10 +42,7 @@ export default function app(i18n) {
         url: '',
       },
     },
-    modal: {
-      processState: 'closed',
-    },
-    activePost: {},
+    modal: {},
   }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
 
   elements.form.addEventListener('submit', (e) => {
@@ -125,11 +120,7 @@ export default function app(i18n) {
       });
 
       const activePost = state.posts.find((post) => post.id === id);
-
-      if (activePost) {
-        state.activePost = activePost;
-        state.modal.processState = 'opened';
-      }
+      state.modal = activePost;
     }
   });
 }
