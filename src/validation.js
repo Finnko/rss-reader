@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-const makeValidationSchema = (i18n, state) => {
+const makeValidationSchema = (i18n, feedUrls) => {
   yup.setLocale({
     string: {
       url: i18n.t('errors.url'),
@@ -12,7 +12,7 @@ const makeValidationSchema = (i18n, state) => {
   });
 
   return yup.object().shape({
-    url: yup.string().url().required().notOneOf(state.urls),
+    url: yup.string().url().required().notOneOf(feedUrls),
   });
 };
 
