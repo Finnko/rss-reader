@@ -1,5 +1,6 @@
 // @ts-check
 import 'regenerator-runtime/runtime.js';
+import 'bootstrap';
 import i18next from 'i18next';
 import resources from './locales';
 import app from './app.js';
