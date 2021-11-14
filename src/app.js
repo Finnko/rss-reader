@@ -39,25 +39,6 @@ const startPolling = (state) => {
   }, REQUEST_TIME);
 };
 
-// const poll = async ({ fn, validate, interval, maxAttempts }) => {
-//   let attempts = 0;
-//
-//   const executePoll = async (resolve, reject) => {
-//     const result = await fn();
-//     attempts++;
-//
-//     if (validate(result)) {
-//       return resolve(result);
-//     } else if (maxAttempts && attempts === maxAttempts) {
-//       return reject(new Error('Exceeded max attempts'));
-//     } else {
-//       setTimeout(executePoll, interval, resolve, reject);
-//     }
-//   };
-//
-//   return new Promise(executePoll);
-// };
-
 export default function app(i18n) {
   const elements = {
     form: document.querySelector('.rss-form'),
@@ -84,7 +65,6 @@ export default function app(i18n) {
       list: [],
       viewedPosts: [],
     },
-    viewedPosts: [],
     feeds: [],
     form: {
       processState: 'filling',
@@ -156,8 +136,8 @@ export default function app(i18n) {
     const { id } = target.dataset;
 
     if (id) {
-      const activePost = state.posts.find((post) => post.id === id);
-      state.viewedPosts.push(id);
+      const activePost = state.posts.list.find((post) => post.id === id);
+      state.posts.viewedPosts.push(id);
       state.modal = activePost;
     }
   });
