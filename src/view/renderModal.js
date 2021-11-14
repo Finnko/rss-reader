@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const render = ({ modal }, watchedState, _, value) => {
   modal.title.textContent = value.title;
   modal.body.textContent = value.description;

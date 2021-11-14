@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
+
 import onChange from 'on-change';
-import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import uniqueId from 'lodash/uniqueId';
 import differenceBy from 'lodash/differenceBy';
@@ -30,7 +31,6 @@ const startPolling = (state) => {
               id: uniqueId(),
             }));
 
-            // eslint-disable-next-line no-param-reassign
             state.posts.list = [...normalizedPosts, ...state.posts.list];
           }
         });
@@ -45,9 +45,7 @@ export default function app(i18n) {
     fields: {
       url: document.querySelector('#url-input'),
     },
-    fieldsError: {
-      url: document.querySelector('.feedback '),
-    },
+    formFeedback: document.querySelector('.feedback '),
     submitButton: document.querySelector('button[type="submit"]'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
@@ -68,7 +66,7 @@ export default function app(i18n) {
     feeds: [],
     form: {
       processState: 'filling',
-      message: {},
+      feedback: '',
       errors: {},
       fields: {
         url: '',
@@ -83,6 +81,7 @@ export default function app(i18n) {
     e.preventDefault();
     const inputValue = elements.form.url.value;
     state.form.processState = 'sending';
+    state.form.feedback = '';
     state.form.fields.url = inputValue;
 
     const feedUrls = state.feeds.map((feed) => feed.url);
@@ -96,7 +95,8 @@ export default function app(i18n) {
       .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
         state.form.processState = 'success';
-        state.form.message = '';
+        state.form.feedback = i18n.t('message.successDownload');
+
         const { feed, posts } = parsedRssData;
 
         const feedId = uniqueId();
@@ -108,6 +108,7 @@ export default function app(i18n) {
 
         state.feeds = [{ ...feed, id: feedId, url: state.form.fields.url }, ...state.feeds];
         state.posts.list = [...normalizedPosts, ...state.posts.list];
+        state.form.fields.url = '';
       })
       .catch((err) => {
         state.form.processState = 'error';
@@ -115,19 +116,15 @@ export default function app(i18n) {
         switch (err.name) {
           case errorTypes.validation:
             state.form.errors = keyBy(err.inner, 'path');
-            state.form.valid = isEmpty(err);
             break;
           case errorTypes.network:
             state.form.errors = transformError(i18n.t('errors.network'));
-            state.form.valid = false;
             break;
           case errorTypes.parse:
             state.form.errors = transformError(i18n.t('errors.rssInvalid'));
-            state.form.valid = false;
             break;
           default:
             state.form.errors = transformError(i18n.t('errors.unknown'));
-            state.form.valid = false;
         }
       });
   });
