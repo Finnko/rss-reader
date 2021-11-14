@@ -2,12 +2,61 @@ import onChange from 'on-change';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import uniqueId from 'lodash/uniqueId';
+import differenceBy from 'lodash/differenceBy';
 import render from './view';
 import { makeValidationSchema, validateForm } from './validation';
 import makeRequest from './api/makeRequest';
 import parseRssData from './parser';
 import errorTypes from './const';
 import { transformError } from './util';
+
+const REQUEST_TIME = 5000; // ms
+
+const startPolling = (state) => {
+  setTimeout(() => {
+    const requests = state.feeds.map(({ url }) => makeRequest(url));
+
+    Promise.all(requests)
+      .then((streams) => {
+        streams.forEach((stream) => {
+          const { feed, posts } = parseRssData(stream);
+          const { id: feedId } = state.feeds.find(({ title }) => title === feed.title);
+          const diff = differenceBy(posts, state.posts.list, 'link');
+
+          if (diff.length > 0) {
+            const normalizedPosts = diff.map((post) => ({
+              ...post,
+              feedId,
+              id: uniqueId(),
+            }));
+
+            // eslint-disable-next-line no-param-reassign
+            state.posts.list = [...normalizedPosts, ...state.posts.list];
+          }
+        });
+      })
+      .finally(() => startPolling(state));
+  }, REQUEST_TIME);
+};
+
+// const poll = async ({ fn, validate, interval, maxAttempts }) => {
+//   let attempts = 0;
+//
+//   const executePoll = async (resolve, reject) => {
+//     const result = await fn();
+//     attempts++;
+//
+//     if (validate(result)) {
+//       return resolve(result);
+//     } else if (maxAttempts && attempts === maxAttempts) {
+//       return reject(new Error('Exceeded max attempts'));
+//     } else {
+//       setTimeout(executePoll, interval, resolve, reject);
+//     }
+//   };
+//
+//   return new Promise(executePoll);
+// };
 
 export default function app(i18n) {
   const elements = {
@@ -31,12 +80,15 @@ export default function app(i18n) {
 
   const state = onChange({
     urls: [],
-    posts: [],
+    posts: {
+      list: [],
+      viewedPosts: [],
+    },
     viewedPosts: [],
     feeds: [],
     form: {
       processState: 'filling',
-      messages: {},
+      message: {},
       errors: {},
       fields: {
         url: '',
@@ -44,6 +96,8 @@ export default function app(i18n) {
     },
     modal: {},
   }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
+
+  startPolling(state);
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -62,6 +116,7 @@ export default function app(i18n) {
       .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
         state.form.processState = 'success';
+        state.form.message = '';
         const { feed, posts } = parsedRssData;
 
         const feedId = uniqueId();
@@ -72,7 +127,7 @@ export default function app(i18n) {
         }));
 
         state.feeds = [{ ...feed, id: feedId, url: state.form.fields.url }, ...state.feeds];
-        state.posts = [...normalizedPosts, ...state.posts];
+        state.posts.list = [...normalizedPosts, ...state.posts.list];
       })
       .catch((err) => {
         state.form.processState = 'error';

@@ -1,8 +1,7 @@
 import { clearDomNode } from '../util';
 
-const renderPost = (post, viewedPosts) => {
+const renderPost = (post, { viewedPosts }) => {
   const linkClass = viewedPosts.includes(post.id) ? 'link-secondary' : 'fw-bold';
-  console.log('work')
   return (`
    <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
      <a
@@ -28,7 +27,7 @@ const renderPost = (post, viewedPosts) => {
 };
 
 const renderPosts = (watchedState) => {
-  const posts = watchedState.posts.map((item) => renderPost(item, watchedState.viewedPosts));
+  const posts = watchedState.posts.list.map((item) => renderPost(item, watchedState.posts));
 
   return (`
     <div class="card border-0">
