@@ -5,7 +5,6 @@ const END_POINT = 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true
 const TIMEOUT = 10000; // ms
 
 const axiosInstance = axios.create({
-  baseURL: END_POINT,
   timeout: TIMEOUT,
   withCredentials: true,
 });
