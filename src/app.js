@@ -79,10 +79,11 @@ export default function app(i18n) {
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const inputValue = elements.form.url.value;
+    const formData = new FormData(e.target);
+
     state.form.processState = 'sending';
     state.form.feedback = '';
-    state.form.fields.url = inputValue;
+    state.form.fields.url = formData.get('url');
 
     const feedUrls = state.feeds.map((feed) => feed.url);
     const schema = makeValidationSchema(i18n, feedUrls);
@@ -108,7 +109,6 @@ export default function app(i18n) {
 
         state.feeds = [{ ...feed, id: feedId, url: state.form.fields.url }, ...state.feeds];
         state.posts.list = [...normalizedPosts, ...state.posts.list];
-        state.form.fields.url = '';
       })
       .catch((err) => {
         state.form.processState = 'error';
