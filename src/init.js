@@ -11,7 +11,6 @@ export default async () => {
   const i18nextInstance = i18next.createInstance();
   await i18nextInstance.init({
     lng: defaultLanguage,
-    debug: true,
     resources: {
       ru: resources.ru,
     },
