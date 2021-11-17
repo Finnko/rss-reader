@@ -16,8 +16,8 @@ const makeValidationSchema = (i18n, feedUrls) => {
   });
 };
 
-const validateForm = (schema, fields) => (
-  schema.validate(fields, { abortEarly: false })
+const validateForm = (schema, url) => (
+  schema.validate({ url }, { abortEarly: false })
     .then(() => ({}))
 );
 

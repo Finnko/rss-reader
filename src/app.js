@@ -83,15 +83,15 @@ export default function app(i18n) {
 
     state.form.processState = 'sending';
     state.form.feedback = '';
-    state.form.fields.url = formData.get('url');
 
+    const url = formData.get('url');
     const feedUrls = state.feeds.map((feed) => feed.url);
     const schema = makeValidationSchema(i18n, feedUrls);
 
-    validateForm(schema, state.form.fields)
+    validateForm(schema, url)
       .then(() => {
         state.form.errors = {};
-        return makeRequest(state.form.fields.url);
+        return makeRequest(url);
       })
       .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
