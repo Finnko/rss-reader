@@ -107,7 +107,7 @@ export default function app(i18n) {
           id: uniqueId(),
         }));
 
-        state.feeds = [{ ...feed, id: feedId, url: state.form.fields.url }, ...state.feeds];
+        state.feeds = [{ ...feed, id: feedId, url }, ...state.feeds];
         state.posts.list = [...normalizedPosts, ...state.posts.list];
       })
       .catch((err) => {
