@@ -1,19 +1,19 @@
 import axios from 'axios';
 import errorTypes from '../const';
 
-const END_POINT = 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=';
+const PROXY_URL = 'https://hexlet-allorigins.herokuapp.com';
 
-const makeRequest = (url, options = {}) => {
-  const proxyUrl = `${END_POINT}${encodeURIComponent(url)}`;
+const proxyUrl = (url) => `${PROXY_URL}/get?url=${url}&disableCache=true`;
 
-  return axios.get(proxyUrl, options)
+const makeRequest = (url, options = {}) => (
+  axios.get(proxyUrl(url), options)
     .then(({ data }) => data.contents)
     .catch((err) => {
       const wrapErr = new Error();
       wrapErr.name = errorTypes.network;
       wrapErr.cause = err;
       throw wrapErr;
-    });
-};
+    })
+);
 
 export default makeRequest;
