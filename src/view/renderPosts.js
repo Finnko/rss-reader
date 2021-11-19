@@ -1,6 +1,6 @@
 import { clearDomNode } from '../util';
 
-const renderPost = (post, { viewedPosts }) => {
+const createPost = (post, { viewedPosts }) => {
   const linkClass = viewedPosts.includes(post.id) ? 'link-secondary' : 'fw-bold';
   return (`
    <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
@@ -26,8 +26,8 @@ const renderPost = (post, { viewedPosts }) => {
 `);
 };
 
-const renderPosts = (watchedState) => {
-  const posts = watchedState.posts.list.map((item) => renderPost(item, watchedState.posts));
+const createPosts = (watchedState) => {
+  const posts = watchedState.posts.list.map((item) => createPost(item, watchedState.posts));
 
   return (`
     <div class="card border-0">
@@ -42,7 +42,7 @@ const renderPosts = (watchedState) => {
 };
 
 const render = (elements, watchedState) => {
-  const postsMarkup = renderPosts(watchedState);
+  const postsMarkup = createPosts(watchedState);
   clearDomNode(elements.posts);
   elements.posts.insertAdjacentHTML('beforeend', postsMarkup);
 };
