@@ -5,6 +5,7 @@ const handleProcessState = ({ submitButton, fields }, processState) => {
   switch (processState) {
     case 'success':
       submitButton.disabled = false;
+      fields.url.disabled = false;
       fields.url.value = '';
       fields.url.focus();
       break;
