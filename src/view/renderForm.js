@@ -5,21 +5,21 @@ const handleProcessState = ({ submitButton, fields }, processState) => {
   switch (processState) {
     case 'success':
       submitButton.disabled = false;
-      fields.url.disabled = false;
+      fields.url.readonly = false;
       fields.url.value = '';
       fields.url.focus();
       break;
     case 'error':
       submitButton.disabled = false;
-      fields.url.disabled = false;
+      fields.url.readonly = false;
       break;
     case 'sending':
       submitButton.disabled = true;
-      fields.url.disabled = true;
+      fields.url.readonly = true;
       break;
     case 'filling':
       submitButton.disabled = false;
-      fields.url.disabled = false;
+      fields.url.readonly = false;
       break;
     default:
       throw new Error(`Unknown process state: ${processState}`);
