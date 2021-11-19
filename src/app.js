@@ -58,7 +58,6 @@ export default function app(i18n) {
   };
 
   const state = onChange({
-    urls: [],
     posts: {
       list: [],
       viewedPosts: [],
@@ -68,9 +67,6 @@ export default function app(i18n) {
       processState: 'filling',
       feedback: '',
       errors: {},
-      fields: {
-        url: '',
-      },
     },
     modal: {},
   }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
