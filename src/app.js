@@ -49,12 +49,7 @@ export default function app(i18n) {
     submitButton: document.querySelector('button[type="submit"]'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
-    modal: {
-      container: document.querySelector('.modal'),
-      title: document.querySelector('.modal-title'),
-      body: document.querySelector('.modal-body'),
-      footerBtnOpen: document.querySelector('.btn-primary'),
-    },
+    modalContainer: document.querySelector('.modal'),
   };
 
   const state = onChange({
@@ -69,7 +64,7 @@ export default function app(i18n) {
       errors: {},
     },
     modal: {},
-  }, (path, value, prevValue) => render(elements, state, path, value, prevValue));
+  }, (path) => render(elements, state, path));
 
   startPolling(state);
 
