@@ -5,4 +5,10 @@ const clearDomNode = (domNode) => {
   nodes.forEach((node) => node.remove());
 };
 
-export { transformError, clearDomNode };
+const makeHtmlElement = (tag, className = '') => {
+  const element = document.createElement(tag);
+  element.className = className;
+  return element;
+};
+
+export { transformError, clearDomNode, makeHtmlElement };

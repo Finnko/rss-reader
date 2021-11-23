@@ -1,31 +1,45 @@
-import { clearDomNode } from '../util';
+import { clearDomNode, makeHtmlElement } from '../util';
 
-const createFeed = (feed) => (`
-  <li class="list-group-item border-0 border-end-0">
-    <h3 class="h6 m-0">${feed.title}</h3>
-    <p class="m-0 small text-black-50">${feed.desc}</p>
-  </li>
-`);
+const createFeed = (feed) => {
+  const li = makeHtmlElement('li', 'list-group-item border-0 border-end-0');
+  const h3 = makeHtmlElement('h3', 'h6 m-0');
+  const p = makeHtmlElement('p', 'm-0 small text-black-50');
+
+  h3.textContent = feed.title;
+  p.textContent = feed.desc;
+  li.appendChild(h3);
+  li.appendChild(p);
+
+  return li;
+};
 
 const createFeeds = (feedsData) => {
-  const feeds = feedsData.map(createFeed);
+  const ul = makeHtmlElement('li', 'list-group border-0 rounded-0');
+  feedsData.forEach((feed) => {
+    const feedLi = createFeed(feed);
+    ul.appendChild(feedLi);
+  });
 
-  return (`
-    <div class="card border-0">
-      <div class="card-body">
+  return ul;
+};
+
+const createFeedContainer = (feedsData) => {
+  const feedsUl = createFeeds(feedsData);
+  const container = makeHtmlElement('div', 'card border-0');
+  container.insertAdjacentHTML('beforeend', (
+    `<div class="card-body">
         <h2 class="card-title h4">Фиды</h2>
-      </div>
-      <ul class="list-group border-0 rounded-0">
-        ${feeds.join('\n')}
-      </ul>
-    </div>
-  `);
+    </div>`));
+
+  container.appendChild(feedsUl);
+
+  return container;
 };
 
 const render = (elements, watchedState) => {
-  const feedsMarkup = createFeeds(watchedState.feeds);
+  const feeds = createFeedContainer(watchedState.feeds);
   clearDomNode(elements.feeds);
-  elements.feeds.insertAdjacentHTML('beforeend', feedsMarkup);
+  elements.feeds.appendChild(feeds);
 };
 
 export default render;

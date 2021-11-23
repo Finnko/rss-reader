@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
-const render = ({ modal }, watchedState, _, value) => {
-  modal.title.textContent = value.title;
-  modal.body.textContent = value.description;
-  modal.footerBtnOpen.href = value.link;
+const render = ({ modalContainer }, watchedState) => {
+  console.log('work render modal');
+  modalContainer.querySelector('.modal-title').textContent = watchedState.modal.title;
+  modalContainer.querySelector('.modal-body').textContent = watchedState.modal.description;
+  modalContainer.querySelector('.btn-primary').href = watchedState.modal.link;
 };
 
 export default render;
