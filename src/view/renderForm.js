@@ -30,7 +30,7 @@ const handleError = (error, i18n) => {
 const createButton = (watchedState, i18n) => {
   const container = makeHtmlElement('div', 'col-auto');
   const button = makeHtmlElement('button', 'h-100 btn btn-lg btn-success px-sm-5');
-  button.ariaLabel = 'add';
+  button.setAttribute('aria-label', 'add');
   button.disabled = watchedState.form.processState === 'sending';
   button.type = 'submit';
   button.textContent = i18n.t('elements.submitButton');
