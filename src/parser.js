@@ -4,11 +4,10 @@ const parser = new DOMParser();
 
 export default (rss) => {
   const rssData = parser.parseFromString(rss, 'application/xml');
-
   const errorBlock = rssData.querySelector('parsererror');
 
   if (errorBlock) {
-    const wrapErr = new Error();
+    const wrapErr = new Error(errorBlock.textContent);
     wrapErr.name = errorTypes.parse;
     throw wrapErr;
   }

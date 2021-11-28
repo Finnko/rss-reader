@@ -9,13 +9,13 @@ const render = (elements, watchedState, path, i18n) => {
     return;
   }
 
-  if (path.includes('posts')) {
-    renderPosts(elements, watchedState);
+  if (path.includes('posts') || path.includes('viewedPosts')) {
+    renderPosts(elements, watchedState, i18n);
     return;
   }
 
   if (path.includes('feeds')) {
-    renderFeeds(elements, watchedState);
+    renderFeeds(elements, watchedState, i18n);
     return;
   }
 

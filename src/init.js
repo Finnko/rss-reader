@@ -1,6 +1,7 @@
 // @ts-check
 import 'bootstrap';
 import i18next from 'i18next';
+import * as yup from 'yup';
 import resources from './locales';
 import app from './app.js';
 
@@ -16,6 +17,14 @@ export default () => {
   });
 
   promise.then(() => {
+    yup.setLocale({
+      string: {
+        url: 'fieldInvalid',
+      },
+      mixed: {
+        notOneOf: 'doubles',
+      },
+    });
     app(i18nextInstance);
   });
 };

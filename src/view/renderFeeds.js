@@ -14,7 +14,7 @@ const createFeed = (feed) => {
 };
 
 const createFeeds = (feedsData) => {
-  const ul = makeHtmlElement('li', 'list-group border-0 rounded-0');
+  const ul = makeHtmlElement('ul', 'list-group border-0 rounded-0');
   feedsData.forEach((feed) => {
     const feedLi = createFeed(feed);
     ul.appendChild(feedLi);
@@ -23,21 +23,22 @@ const createFeeds = (feedsData) => {
   return ul;
 };
 
-const createFeedContainer = (feedsData) => {
+const createFeedContainer = (feedsData, i18n) => {
   const feedsUl = createFeeds(feedsData);
   const container = makeHtmlElement('div', 'card border-0');
-  container.insertAdjacentHTML('beforeend', (
-    `<div class="card-body">
-        <h2 class="card-title h4">Фиды</h2>
-    </div>`));
+  const div = makeHtmlElement('div', 'card-body');
+  const h2 = makeHtmlElement('h2', 'card-title h4');
+  h2.textContent = i18n.t('elements.feeds.title');
 
+  div.appendChild(h2);
+  container.appendChild(div);
   container.appendChild(feedsUl);
 
   return container;
 };
 
-const render = (elements, watchedState) => {
-  const feeds = createFeedContainer(watchedState.feeds);
+const render = (elements, watchedState, i18n) => {
+  const feeds = createFeedContainer(watchedState.feeds, i18n);
   clearDomNode(elements.feeds);
   elements.feeds.appendChild(feeds);
 };
