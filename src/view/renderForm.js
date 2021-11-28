@@ -32,7 +32,7 @@ const createButton = (watchedState, i18n) => {
   const button = makeHtmlElement('button', 'h-100 btn btn-lg btn-success px-sm-5');
   button.disabled = watchedState.form.processState === 'sending';
   button.type = 'submit';
-  button.ariaLabel = i18n.t('elements.submitButton');
+  button.ariaLabel = 'add';
   button.textContent = i18n.t('elements.submitButton');
   container.appendChild(button);
 
