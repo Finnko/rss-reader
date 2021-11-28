@@ -1,7 +1,7 @@
 export default {
   translation: {
     errors: {
-      url: 'Ссылка должна быть валидным URL',
+      fieldInvalid: 'Ссылка должна быть валидным URL',
       doubles: 'RSS уже существует',
       network: 'Ошибка сети',
       rssInvalid: 'Ресурс не содержит валидный RSS',
@@ -11,6 +11,13 @@ export default {
       successDownload: 'RSS успешно загружен',
     },
     elements: {
+      posts: {
+        title: 'Посты',
+        viewButton: 'Просмотр',
+      },
+      feeds: {
+        title: 'Фиды',
+      },
       submitButton: 'Добавить',
       input: {
         label: 'Ссылка RSS',

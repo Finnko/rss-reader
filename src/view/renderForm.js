@@ -13,7 +13,7 @@ const inputFieldAttrs = {
 
 const handleError = (error, i18n) => {
   if (error.name === errorTypes.validation) {
-    return error.message;
+    return i18n.t(`errors.${error.message}`);
   }
 
   if (error.isAxiosError) {

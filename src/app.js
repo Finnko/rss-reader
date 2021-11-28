@@ -10,7 +10,7 @@ import parseRssData from './parser';
 
 const REQUEST_TIME = 5000; // ms
 
-const startPolling = (state) => {
+const refreshPosts = (state) => {
   setTimeout(() => {
     const requests = state.feeds.map(({ url }) => makeRequest(url));
 
@@ -19,7 +19,7 @@ const startPolling = (state) => {
         streams.forEach((stream) => {
           const { feed, posts } = parseRssData(stream);
           const { id: feedId } = state.feeds.find(({ title }) => title === feed.title);
-          const diff = differenceBy(posts, state.posts.list, 'link');
+          const diff = differenceBy(posts, state.posts, 'link');
 
           if (diff.length > 0) {
             const normalizedPosts = diff.map((post) => ({
@@ -28,11 +28,11 @@ const startPolling = (state) => {
               id: uniqueId(),
             }));
 
-            state.posts.list = [...normalizedPosts, ...state.posts.list];
+            state.posts = [...normalizedPosts, ...state.posts];
           }
         });
       })
-      .finally(() => startPolling(state));
+      .finally(() => refreshPosts(state));
   }, REQUEST_TIME);
 };
 
@@ -46,10 +46,8 @@ export default function app(i18n) {
   };
 
   const state = onChange({
-    posts: {
-      list: [],
-      viewedPosts: [],
-    },
+    posts: [],
+    viewedPosts: new Set(),
     feeds: [],
     form: {
       processState: 'filling',
@@ -58,7 +56,7 @@ export default function app(i18n) {
     modal: {},
   }, (path) => render(elements, state, path, i18n));
 
-  startPolling(state);
+  refreshPosts(state);
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -68,7 +66,7 @@ export default function app(i18n) {
 
     const url = formData.get('url').trim();
     const feedUrls = state.feeds.map((feed) => feed.url);
-    const schema = makeValidationSchema(i18n, feedUrls);
+    const schema = makeValidationSchema(feedUrls);
 
     validateForm(schema, url)
       .then(() => makeRequest(url))
@@ -85,7 +83,7 @@ export default function app(i18n) {
         }));
 
         state.feeds = [{ ...feed, id: feedId, url }, ...state.feeds];
-        state.posts.list = [...normalizedPosts, ...state.posts.list];
+        state.posts = [...normalizedPosts, ...state.posts];
       })
       .catch((err) => {
         state.form.error = err;
@@ -97,8 +95,8 @@ export default function app(i18n) {
     const { id } = target.dataset;
 
     if (id) {
-      const activePost = state.posts.list.find((post) => post.id === id);
-      state.posts.viewedPosts.push(id);
+      const activePost = state.posts.find((post) => post.id === id);
+      state.viewedPosts.add(id);
       state.modal = activePost;
     }
   });
