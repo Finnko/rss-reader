@@ -13,6 +13,10 @@ import { transformError } from './util';
 
 const REQUEST_TIME = 5000; // ms
 
+const handleError = (error) => {
+
+};
+
 const startPolling = (state) => {
   setTimeout(() => {
     const requests = state.feeds.map(({ url }) => makeRequest(url));
@@ -42,11 +46,7 @@ const startPolling = (state) => {
 export default function app(i18n) {
   const elements = {
     form: document.querySelector('.rss-form'),
-    fields: {
-      url: document.querySelector('#url-input'),
-    },
-    formFeedback: document.querySelector('.feedback '),
-    submitButton: document.querySelector('button[type="submit"]'),
+    formFeedback: document.querySelector('.feedback'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
     modalContainer: document.querySelector('.modal'),
@@ -60,11 +60,10 @@ export default function app(i18n) {
     feeds: [],
     form: {
       processState: 'filling',
-      feedback: '',
-      errors: {},
+      error: null,
     },
     modal: {},
-  }, (path) => render(elements, state, path));
+  }, (path) => render(elements, state, path, i18n));
 
   startPolling(state);
 
@@ -73,24 +72,20 @@ export default function app(i18n) {
     const formData = new FormData(e.target);
 
     state.form.processState = 'sending';
-    state.form.feedback = '';
 
-    const url = formData.get('url');
+    const url = formData.get('url').trim();
     const feedUrls = state.feeds.map((feed) => feed.url);
     const schema = makeValidationSchema(i18n, feedUrls);
 
     validateForm(schema, url)
       .then(() => {
-        state.form.errors = {};
         return makeRequest(url);
       })
       .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
         state.form.processState = 'success';
-        state.form.feedback = i18n.t('message.successDownload');
 
         const { feed, posts } = parsedRssData;
-
         const feedId = uniqueId();
         const normalizedPosts = posts.map((post) => ({
           ...post,
@@ -102,21 +97,8 @@ export default function app(i18n) {
         state.posts.list = [...normalizedPosts, ...state.posts.list];
       })
       .catch((err) => {
+        state.form.error = err;
         state.form.processState = 'error';
-
-        switch (err.name) {
-          case errorTypes.validation:
-            state.form.errors = keyBy(err.inner, 'path');
-            break;
-          case errorTypes.network:
-            state.form.errors = transformError(i18n.t('errors.network'));
-            break;
-          case errorTypes.parse:
-            state.form.errors = transformError(i18n.t('errors.rssInvalid'));
-            break;
-          default:
-            state.form.errors = transformError(i18n.t('errors.unknown'));
-        }
       });
   });
 

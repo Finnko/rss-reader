@@ -10,5 +10,11 @@ export default {
     message: {
       successDownload: 'RSS успешно загружен',
     },
+    elements: {
+      submitButton: 'Добавить',
+      input: {
+        label: 'Ссылка RSS',
+      },
+    },
   },
 };
