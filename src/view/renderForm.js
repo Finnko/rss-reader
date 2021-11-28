@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-import has from 'lodash/has';
 import { addAttributes, makeHtmlElement } from '../util';
 import errorTypes from '../const';
 
@@ -7,13 +6,12 @@ const inputFieldAttrs = {
   id: 'url-input',
   autofocus: true,
   name: 'url',
-  ariaLabel: 'url',
+  'aria-label': 'url',
   required: true,
   autocomplete: 'off',
 };
 
 const handleError = (error, i18n) => {
-  console.log({error})
   if (error.name === errorTypes.validation) {
     return error.message;
   }

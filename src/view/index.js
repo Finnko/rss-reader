@@ -4,7 +4,6 @@ import renderFeeds from './renderFeeds';
 import renderModal from './renderModal';
 
 const render = (elements, watchedState, path, i18n) => {
-  console.log({path})
   if (path.includes('form')) {
     renderForm(elements, watchedState, i18n);
     return;

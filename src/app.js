@@ -1,21 +1,14 @@
 /* eslint-disable no-param-reassign */
 
 import onChange from 'on-change';
-import keyBy from 'lodash/keyBy';
 import uniqueId from 'lodash/uniqueId';
 import differenceBy from 'lodash/differenceBy';
 import render from './view';
 import { makeValidationSchema, validateForm } from './validation';
 import makeRequest from './api/makeRequest';
 import parseRssData from './parser';
-import errorTypes from './const';
-import { transformError } from './util';
 
 const REQUEST_TIME = 5000; // ms
-
-const handleError = (error) => {
-
-};
 
 const startPolling = (state) => {
   setTimeout(() => {
@@ -78,9 +71,7 @@ export default function app(i18n) {
     const schema = makeValidationSchema(i18n, feedUrls);
 
     validateForm(schema, url)
-      .then(() => {
-        return makeRequest(url);
-      })
+      .then(() => makeRequest(url))
       .then((rssStream) => parseRssData(rssStream))
       .then((parsedRssData) => {
         state.form.processState = 'success';
