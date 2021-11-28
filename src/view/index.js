@@ -3,12 +3,12 @@ import renderPosts from './renderPosts';
 import renderFeeds from './renderFeeds';
 import renderModal from './renderModal';
 
-const render = (elements, watchedState, path) => {
+const render = (elements, watchedState, path, i18n) => {
   console.log({path})
-  // if (path.includes('form')) {
-  //   // renderForm(elements, watchedState, path);
-  //   return;
-  // }
+  if (path.includes('form')) {
+    renderForm(elements, watchedState, i18n);
+    return;
+  }
 
   if (path.includes('posts')) {
     renderPosts(elements, watchedState);

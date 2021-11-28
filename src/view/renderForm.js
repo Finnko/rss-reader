@@ -1,81 +1,101 @@
 /* eslint-disable no-param-reassign */
 import has from 'lodash/has';
+import { addAttributes, makeHtmlElement } from '../util';
+import errorTypes from '../const';
 
-const handleProcessState = ({ submitButton, fields }, processState) => {
-  switch (processState) {
-    case 'success':
-      submitButton.disabled = false;
-      fields.url.readOnly = false;
-      fields.url.value = '';
-      fields.url.focus();
-      break;
-    case 'error':
-      submitButton.disabled = false;
-      fields.url.readOnly = false;
-      break;
-    case 'sending':
-      submitButton.disabled = true;
-      fields.url.readOnly = true;
-      break;
-    case 'filling':
-      submitButton.disabled = false;
-      fields.url.readOnly = false;
-      break;
-    default:
-      throw new Error(`Unknown process state: ${processState}`);
+const inputFieldAttrs = {
+  id: 'url-input',
+  autofocus: true,
+  name: 'url',
+  ariaLabel: 'url',
+  required: true,
+  autocomplete: 'off',
+};
+
+const handleError = (error, i18n) => {
+  console.log({error})
+  if (error.name === errorTypes.validation) {
+    return error.message;
+  }
+
+  if (error.isAxiosError) {
+    return i18n.t('errors.network');
+  }
+
+  if (error.name === errorTypes.parse) {
+    return i18n.t('errors.rssInvalid');
+  }
+
+  return i18n.t('errors.unknown');
+};
+
+const createButton = (watchedState, i18n) => {
+  const container = makeHtmlElement('div', 'col-auto');
+  const button = makeHtmlElement('button', 'h-100 btn btn-lg btn-success px-sm-5');
+  button.disabled = watchedState.form.processState === 'sending';
+  button.type = 'submit';
+  button.ariaLabel = i18n.t('elements.submitButton');
+  button.textContent = i18n.t('elements.submitButton');
+  container.appendChild(button);
+
+  return container;
+};
+
+const createFormContainer = (watchedState, i18n) => {
+  const col = makeHtmlElement('div', 'col');
+  const container = makeHtmlElement('div', 'form-floating');
+  const input = makeHtmlElement('input', 'form-control w-100');
+  const label = makeHtmlElement('label');
+
+  addAttributes(input, inputFieldAttrs);
+  input.placeholder = i18n.t('elements.input.label');
+  input.readOnly = watchedState.form.processState === 'sending';
+  label.textContent = i18n.t('elements.input.label');
+  label.htmlFor = 'url-input';
+
+  if (watchedState.form.processState === 'error') {
+    input.classList.add('is-invalid');
+  }
+
+  container.appendChild(input);
+  container.appendChild(label);
+  col.appendChild(container);
+
+  return { container: col, input };
+};
+
+const renderForm = (form, watchedState, i18n) => {
+  form.innerHTML = '';
+  const row = makeHtmlElement('div', 'row');
+  const { container, input } = createFormContainer(watchedState, i18n);
+  const button = createButton(watchedState, i18n);
+
+  row.appendChild(container);
+  row.appendChild(button);
+  form.appendChild(row);
+
+  input.focus();
+};
+
+const renderFeedback = (formFeedback, watchedState, i18n) => {
+  formFeedback.textContent = '';
+  formFeedback.className = 'feedback m-0 position-absolute small';
+
+  if (watchedState.form.processState === 'success') {
+    formFeedback.classList.add('text-success');
+    formFeedback.textContent = i18n.t('message.successDownload');
+  }
+
+  if (watchedState.form.processState === 'error') {
+    formFeedback.classList.add('text-danger');
+    const error = handleError(watchedState.form.error, i18n);
+    formFeedback.textContent = error;
   }
 };
 
-const renderFeedback = ({ formFeedback }, value) => {
-  formFeedback.classList.remove('text-danger', 'text-success');
-  formFeedback.classList.add('text-success');
-  formFeedback.textContent = value;
-};
-
-const renderErrors = (elements, errors, prevErrors) => {
-  elements.formFeedback.classList.remove('text-danger', 'text-success');
-  elements.formFeedback.classList.add('text-danger');
-
-  Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-    const error = errors[fieldName];
-    const fieldHadError = has(prevErrors, fieldName);
-    const fieldHasError = has(errors, fieldName);
-
-    if (!fieldHadError && !fieldHasError) {
-      return;
-    }
-
-    if (fieldHadError && !fieldHasError) {
-      fieldElement.classList.remove('is-invalid');
-      elements.formFeedback.textContent = '';
-      return;
-    }
-
-    if (fieldHadError && fieldHasError) {
-      elements.formFeedback.textContent = error.message;
-      return;
-    }
-
-    fieldElement.classList.add('is-invalid');
-    elements.formFeedback.classList.add('text-danger');
-    elements.formFeedback.textContent = error.message;
-  });
-};
-
-const render = (elements, watchedState, path, value, prevValue) => {
-  switch (path) {
-    case 'form.processState':
-      handleProcessState(elements, value);
-      break;
-    case 'form.feedback':
-      renderFeedback(elements, value);
-      break;
-    case 'form.errors':
-      renderErrors(elements, value, prevValue);
-      break;
-    default:
-      break;
-  }
+const render = ({ form, formFeedback }, watchedState, i18n) => {
+  renderForm(form, watchedState, i18n);
+  renderFeedback(formFeedback, watchedState, i18n);
 };
 
 export default render;
